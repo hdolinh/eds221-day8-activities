@@ -95,7 +95,8 @@ sf_emissions_plot <- sf_emissions %>%
 ```
 
 Making the plot
-```{r}
+```{r, fig.alt = "Line graph of CO2 emissions of railways based on two commodities: diesel and electricity from 2000 to 2020. While electricity had significantly higher CO2 emissions from 2000 to 2018, staring in 2019 electricity emits less CO2 than diesel."}
+
 ggplot(data = sf_emissions_plot, aes(x = calendar_year, y = emissions_sum)) +
   geom_line(aes(color = commodity_type, label = commodity_type)) +
   scale_x_continuous(breaks = c(2000, 2010, 2020),
@@ -111,5 +112,16 @@ ggplot(data = sf_emissions_plot, aes(x = calendar_year, y = emissions_sum)) +
 
 #  geom_dl(aes(label = commodity_type), method = "last.points", hjust = -10) +
 # geom_dl(aes(label = State), method = list(dl.combine("first.points", "last.points")), cex = 0.8)
+
+```
+## Alt Text Practice
+
+```{r, alt text: "Three histograms of the distribution of body mass for penguins, Adelie, Chinstrap and Gentoo. Gentoo has the largest body mass distribution, and Adelie has the smallest.}
+library(tidyverse)
+library(palmerpenguins)
+
+ggplot(penguins, aes(x = body_mass_g)) +
+  geom_histogram() +
+  facet_wrap(~species)
 ```
 
