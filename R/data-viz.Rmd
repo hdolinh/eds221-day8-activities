@@ -16,6 +16,7 @@ library(gghighlight)
 library(paletteer)
 library(ggExtra)
 library(ggbeeswarm)
+library(directlabels)
 ```
 
 ## Data Visualization Worst
@@ -96,29 +97,19 @@ sf_emissions_plot <- sf_emissions %>%
 Making the plot
 ```{r}
 ggplot(data = sf_emissions_plot, aes(x = calendar_year, y = emissions_sum)) +
-  geom_line(aes(color = commodity_type)) +
+  geom_line(aes(color = commodity_type, label = commodity_type)) +
   scale_x_continuous(breaks = c(2000, 2010, 2020),
                      limits = c(2000, 2020),
                      expand = c(0, 0)) +
-  labs(x = "Year", y = "CO2 Emissions (metric ton)", title = "CO2 Emissions of Railways Based on Commodity") +
+  labs(x = "Year", y = "CO2 Emissions \n (metric ton)", title = "CO2 Emissions of Railways Based on Commodity", color = "Commodity Types", size = 9) +
   theme_light() +
   theme(
       title = element_text(face = "bold"),
-      axis.title.y = element_text(angle = 360, face = "bold", vjust = 0.6)
+      axis.title.y = element_text(angle = 360, face = "bold", vjust = 0.6, size = 9),
+      axis.title.x = element_text(size = 9)
     )
 
-```
-```{r}
-#  labs(x = "CO2 Emissions (metric ton)", y = "Sector Type", title = "CO2 Emissions of Sectors in SF") +
-#  theme_light() +
-#  theme(
-#    axis.title.y = element_text(angle = 360, face = "bold", vjust = 0.6),
-#    title = element_text(face = "bold"),
-#    panel.grid.minor = element_blank() 
-#  )
-  
-  
-#  theme(axis.text.x = element_text(angle=90, hjust=1))
-# aes(y = fct_reorder(sector_general, emissions_sum), x = emissions_sum))
+#  geom_dl(aes(label = commodity_type), method = "last.points", hjust = -10) +
+# geom_dl(aes(label = State), method = list(dl.combine("first.points", "last.points")), cex = 0.8)
 ```
 
