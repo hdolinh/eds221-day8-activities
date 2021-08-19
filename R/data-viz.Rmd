@@ -1,0 +1,102 @@
+---
+title: "Day 8 Tasks & Activities"
+author: "Halina Do-Linh"
+date: "8/18/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(patchwork)
+library(ggrepel)
+library(gghighlight)
+library(paletteer)
+library(ggExtra)
+library(ggbeeswarm)
+```
+
+## Data Visualization Worst
+```{r}
+space_launches <- read_csv(here("data", "space_launches.csv"), na = c("#VALUE!", " "))
+```
+
+Starting to wrangle
+```{r}
+space_lauches_w <- space_launches %>% 
+  group_by(agency_type, launch_year) %>% 
+  summarize(count = n()) %>% 
+  mutate(count = as.numeric(count))
+
+```
+
+Data Viz
+```{r}
+ggplot(data = space_lauches_w, aes(x = launch_year, y = count)) +
+  geom_polygon(aes(fill = agency_type), show.legend = FALSE) +
+  labs(x = "YEAR", y = "NUMBER OF LAUNCHES", title = "WE LAUNCH LOTS OF ROCKETS!") +
+  scale_fill_manual(values = c("brown", "gray", "black")) +
+  theme(
+    text = element_text(size = 20, family = "Comic Sans MS"),
+    plot.title = element_text(size = 10),
+    plot.background = element_rect("pink"),
+    panel.grid = element_blank(),
+    panel.background = element_rect("dark blue"),
+  )
+
+```
+## Task 2: Data Wrangling
+```{r}
+sf_emissions <- read_csv(here("data", "SF_emissions.csv")) %>% 
+  clean_names()
+
+```
+
+Create a summary table of total annual greenhouse gas emissions (only from Emissions_mtCO2e column) by sector_general
+```{r}
+sf_emissions_sg <- sf_emissions %>% 
+  group_by(sector_general) %>% 
+  summarize(tot_ghg = sum(emissions_mt_co2e, na.rm = TRUE))
+  
+```
+
+Create a summary table of total annual greenhouse gas emissions (only from Emissions_mtCO2e column) by year and commodity type
+```{r}
+sf_emissions_yc <- sf_emissions %>% 
+  group_by(calendar_year, commodity_type) %>% 
+  summarize(tot_ghg = sum(emissions_mt_co2e, na.rm = TRUE))
+```
+
+Create a subset of the data that only contains observations from 2005 on, only for observations where Sector_Detail2 contains the pattern “PG&E”, then limit to columns Calendar_Year, Sector_Detail2 and Emissions_mtCO2e.
+```{r}
+sf_emissions_pge <- sf_emissions %>% 
+  filter(calendar_year == 2005) %>% 
+  filter(str_detect(string = sector_detail2, pattern = "PG&E")) %>% 
+  select(c(calendar_year, sector_detail2, emissions_mt_co2e))
+```
+
+## Task 3
+
+Create a finalized graph (as perfect as you can make it) using the San Francisco GHG emissions dataset. You get to choose what you want to visualize. You can pick which variables & observations you’re interested in. You may want to do some wrangling / summarizing first.
+
+Once you’ve decided on what to plot, create the best graph that you can to communicate what’s going on with the data.
+
+Once you’re done, drop your best graph (as a .png or .jpg) into the course Slack channel.
+
+```{r}
+sf_emissions_plot <- sf_emissions %>% 
+  select(c(calendar_year, sector_gpc, quantity, quantity_units, commodity_type, sector_general)) %>% 
+  group_by(sector_general) %>% 
+  summarize(sectorg_mean = mean(quantity))
+```
+
+Making the plot
+```{r}
+ggplot(data = sf_emissions_plot, aes(y = fct_reorder(sector_general, sectorg_mean), x = sectorg_mean)) +
+  geom_col() +
+  labs(x = "Energy Usage", y = "Sector General") +
+  theme_light()
+```
+
